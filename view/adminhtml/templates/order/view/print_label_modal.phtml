@@ -1,0 +1,31 @@
+<div id="modal">
+    <div class="modal-body-content">
+        <embed id="pdf" frameborder="0" width="100%" height="400px">
+    </div>
+</div>
+
+<script>
+    require([
+        "jquery",
+        "Magento_Ui/js/modal/modal"
+    ],function($, modal) {
+
+        var options = {
+            type: 'popup',
+            responsive: true,
+            title: $.mage.__('Print label'),
+            buttons: [{
+                text: $.mage.__('Ok'),
+                class: '',
+                click: function () {
+                    this.closeModal();
+                }
+            }]
+        };
+
+        var popup = modal(options, $('#modal'));
+        $("#modal").click(function() {
+            $('#modal').modal('openModal');
+        });
+    });
+</script>

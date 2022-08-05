@@ -1,0 +1,12 @@
+<?php
+/**
+* @var $block \ZingyBits\BalikobotAdminUi\Block\Adminhtml\Order\View\View
+*/
+
+$orderId = $this->getRequest()->getParam('order_id');
+?>
+
+<div>
+   <h2>Balikobot information</h2>
+   <p><?php echo $block->getBalikobotData($orderId)?></p>
+</div>
