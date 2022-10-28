@@ -11,7 +11,7 @@ require(
             });
             methodSelect.attr('disabled', true);
             if (currentShipperSelect.val() !== '0') {
-                fetch('/index.php/zingybits_balikobotcore/index/methods?shipper=' + currentShipperSelect.val())
+                fetch('/index.php/zingybits_balikobot/index/methods?shipper=' + currentShipperSelect.val())
                 .then(response => response.json())
                 .then(data => {
                     let methodValue = methodSelect.val();

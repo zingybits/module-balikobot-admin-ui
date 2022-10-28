@@ -31,16 +31,14 @@ class MethodColumn extends Select
     protected $scopeConfig;
 
     /**
-     * Constructor
-     *
      * @param Context $context
+     * @param ScopeConfigInterface $scopeConfig
      * @param array $data
-     * @param ScopeConfigInterface $scopeConfig,
      */
     public function __construct(
         Context $context,
-        array $data = [],
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        array $data = []
     ) {
         $this->scopeConfig = $scopeConfig;
         parent::__construct($context, $data);
@@ -50,9 +48,9 @@ class MethodColumn extends Select
      * Set "name" for <select> element
      *
      * @param string $value
-     * @return $this
+     * @return mixed
      */
-    public function setInputName($value)
+    public function setInputName(string $value)
     {
         return $this->setName($value);
     }
@@ -60,10 +58,10 @@ class MethodColumn extends Select
     /**
      * Set "id" for <select> element
      *
-     * @param $value
+     * @param string $value
      * @return $this
      */
-    public function setInputId($value)
+    public function setInputId(string $value)
     {
         return $this->setId($value);
     }
@@ -81,6 +79,11 @@ class MethodColumn extends Select
         return parent::_toHtml();
     }
 
+    /**
+     * Return source options
+     *
+     * @return \string[][]
+     */
     private function getSourceOptions(): array
     {
         $list = [

@@ -4,7 +4,7 @@ function zingybits_balikobot_add_balik()
     let orderIdInput = document.querySelector('input[name="order_id"]');
     if (orderIdInput) {
         let orderId = orderIdInput.value;
-        fetch('/index.php/zingybits_balikobotcore/index/index?order_id=' + orderId)
+        fetch('/zingybits_balikobot/index/index?order_id=' + orderId)
             .then(response => response.json())
             .then(data => {
                 if(data.status == "error") {

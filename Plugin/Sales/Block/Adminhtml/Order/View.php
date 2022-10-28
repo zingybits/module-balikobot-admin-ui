@@ -21,16 +21,22 @@ use Magento\Sales\Block\Adminhtml\Order\View as OrderView;
 
 class View
 {
-   public function beforeSetLayout(OrderView $subject)
-   {
-       $subject->addButton(
-           'order_custom_button',
-           [
-               'label' => __('Print Label'),
-               'class' => __('balikobot-button'),
-               'id' => 'order-view-balikobot-button',
-               'onclick' => "zingybits_balikobot_add_balik()"
-           ]
-       );
-   }
+    /**
+     * Add "Print label" button
+     *
+     * @param OrderView $subject
+     * @return void
+     */
+    public function beforeSetLayout(OrderView $subject)
+    {
+        $subject->addButton(
+            'order_custom_button',
+            [
+                'label' => __('Print Label'),
+                'class' => __('balikobot-button'),
+                'id' => 'order-view-balikobot-button',
+                'onclick' => "zingybits_balikobot_add_balik()"
+            ]
+        );
+    }
 }

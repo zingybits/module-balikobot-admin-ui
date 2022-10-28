@@ -31,22 +31,18 @@ class BalikobotShippersColumn extends Select
     protected $balikobotApiClient;
 
     /**
-     * Constructor
-     *
      * @param Context $context
-     * @param array $data
      * @param BalikobotApiClient $balikobotApiClient
+     * @param array $data
      */
     public function __construct(
         Context $context,
-        array $data = [],
-        BalikobotApiClient $balikobotApiClient
+        BalikobotApiClient $balikobotApiClient,
+        array $data = []
     ) {
         $this->balikobotApiClient = $balikobotApiClient;
         parent::__construct($context, $data);
     }
-
-
 
     /**
      * Set "name" for <select> element
@@ -62,10 +58,10 @@ class BalikobotShippersColumn extends Select
     /**
      * Set "id" for <select> element
      *
-     * @param $value
-     * @return $this
+     * @param string $value
+     * @return BalikobotShippersColumn
      */
-    public function setInputId($value)
+    public function setInputId(string $value)
     {
         return $this->setId($value);
     }
@@ -83,6 +79,11 @@ class BalikobotShippersColumn extends Select
         return parent::_toHtml();
     }
 
+    /**
+     * Return source options
+     *
+     * @return \string[][]
+     */
     private function getSourceOptions(): array
     {
         $list = [

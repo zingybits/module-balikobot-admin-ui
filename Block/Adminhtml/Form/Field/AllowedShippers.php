@@ -20,20 +20,9 @@ namespace ZingyBits\BalikobotAdminUi\Block\Adminhtml\Form\Field;
 use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
 use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
-use ZingyBits\BalikobotAdminUi\Block\Adminhtml\Form\Field\MethodColumn;
-use ZingyBits\BalikobotAdminUi\Block\Adminhtml\Form\Field\ShipperColumn;
-use ZingyBits\BalikobotAdminUi\Block\Adminhtml\Form\Field\BalikobotShippersColumn;
 
-/**
- * Class Ranges
- */
 class AllowedShippers extends AbstractFieldArray
 {
-    /**
-     * @var ShipperColumn
-     */
-    private $shipperRenderer;
-
     /**
      * @var MethodColumn
      */
@@ -46,10 +35,11 @@ class AllowedShippers extends AbstractFieldArray
 
     /**
      * Prepare rendering the new field by adding all the needed columns
+     *
+     * @return void
      */
     protected function _prepareToRender()
     {
-
         try {
             $this->_template = 'ZingyBits_BalikobotAdminUi::system/config/form/field/array.phtml';
 
@@ -92,22 +82,8 @@ class AllowedShippers extends AbstractFieldArray
     }
 
     /**
-     * @return ShipperColumn
-     * @throws LocalizedException
-     */
-    private function getShipperRenderer()
-    {
-        if (!$this->shipperRenderer) {
-            $this->shipperRenderer = $this->getLayout()->createBlock(
-                ShipperColumn::class,
-                '',
-                ['data' => ['is_render_to_js_template' => true]]
-            );
-        }
-        return $this->shipperRenderer;
-    }
-
-    /**
+     * Return balikobot shipper renderer
+     *
      * @return BalikobotShippersColumn
      * @throws LocalizedException
      */
@@ -124,6 +100,8 @@ class AllowedShippers extends AbstractFieldArray
     }
 
     /**
+     * Return method renderer
+     *
      * @return MethodColumn
      * @throws LocalizedException
      */

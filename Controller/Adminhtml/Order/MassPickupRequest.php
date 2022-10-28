@@ -29,13 +29,10 @@ use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
 use Magento\Sales\Model\Order;
 use Psr\Log\LoggerInterface;
 
-/**
- * Class MassPickupRequest
- */
 class MassPickupRequest extends AbstractMassAction
 {
     /**
-     * @var OrderManagementInterface
+     * @var OrderManagementInterfac
      */
     protected $orderManagement;
 
@@ -70,14 +67,14 @@ class MassPickupRequest extends AbstractMassAction
      * @param Order $order
      */
     public function __construct(
-        Context $context,
-        Filter $filter,
-        CollectionFactory $collectionFactory,
+        Context                  $context,
+        Filter                   $filter,
+        CollectionFactory        $collectionFactory,
         OrderManagementInterface $orderManagement,
-        ScopeConfigInterface $scopeConfig,
-        BalikobotApiClient $balikobotApiClient,
-        LoggerInterface $logger,
-        Order $order
+        ScopeConfigInterface     $scopeConfig,
+        BalikobotApiClient       $balikobotApiClient,
+        LoggerInterface          $logger,
+        Order                    $order
     ) {
         parent::__construct($context, $filter);
         $this->collectionFactory = $collectionFactory;
@@ -105,21 +102,21 @@ class MassPickupRequest extends AbstractMassAction
 
         foreach ($collection->getItems() as $item) {
             // leave the loop if no ID
-            if (! $item->getEntityId()) {
+            if (!$item->getEntityId()) {
                 continue;
             }
             $loadedOrder = $this->order->load($item->getEntityId());
 
             // leave the loop if no stored json (from previous api call)
             $balikobotJson = $loadedOrder->getBalikobotJson();
-            if (! $balikobotJson) {
+            if (!$balikobotJson) {
                 continue;
             }
 
             $shippingMethod = $item->getShippingMethod();
 
             // detect what shipping method has been selected and prevent several shipping methods in a single request
-            if (is_null($firstShippingMethod)) {
+            if ($firstShippingMethod === null) {
                 $firstShippingMethod = $shippingMethod;
             } elseif ($shippingMethod !== $firstShippingMethod) {
                 $this->messageManager->addError(__('Only one carrier must be assigned for selected orders'));
@@ -129,7 +126,7 @@ class MassPickupRequest extends AbstractMassAction
             }
 
             $balikobotData = json_decode($balikobotJson);
-            if (! $balikobotData->package_id) {
+            if (!$balikobotData->package_id) {
                 continue;
             }
 
@@ -158,17 +155,17 @@ class MassPickupRequest extends AbstractMassAction
             $countProcessed += count($packageIds);
 
             if ($bbResponse['status'] == 200) {
-                $this->messageManager->addSuccess(__('Order list <a target="_blank" href=%1>%1</a>',
-                    $bbResponse['handover_url']));
+                $this->messageManager
+                    ->addSuccess(__('Order list <a target="_blank" href=%1>%1</a>', $bbResponse['handover_url']));
 
                 // changing order status
                 foreach ($entityIds as $id) {
                     $loadedOrder = $this->order->load($id);
                     $this->order->addCommentToStatusHistory(__('The order has been set for pickup'));
-                    $loadedOrder->setState(status::STATUS_BBOT_PICKUP, true);
-                    $loadedOrder->setStatus(status::STATUS_BBOT_PICKUP);
-                    $loadedOrder->addStatusToHistory($loadedOrder->getStatus(),
-                        __('new order status - ') . __(status::LABEL_STATUS_BBOT_PICKUP));
+                    $loadedOrder->setState(Status::STATUS_BBOT_PICKUP, true);
+                    $loadedOrder->setStatus(Status::STATUS_BBOT_PICKUP);
+                    $loadedOrder->addStatusToHistory($loadedOrder->getStatus(), __('new order status - ' .
+                        Status::LABEL_STATUS_BBOT_PICKUP));
                     $loadedOrder->save();
                 }
             }
