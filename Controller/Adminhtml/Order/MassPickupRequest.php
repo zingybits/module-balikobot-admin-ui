@@ -21,11 +21,12 @@ use ZingyBits\BalikobotCore\Api\Status;
 use ZingyBits\BalikobotCore\Model\BalikobotApiClient;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Backend\App\Action\Context;
-use Magento\Framework\App\Config\ScopeConfigInterface;
+use ZingyBits\BalikobotCore\Model\Config;
 use Magento\Ui\Component\MassAction\Filter;
 use Magento\Sales\Api\OrderManagementInterface;
 use Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
+use ZingyBits\BalikobotCore\Model\Order\Email\Sender\OrderSender;
 use Magento\Sales\Model\Order;
 use Psr\Log\LoggerInterface;
 
@@ -37,9 +38,9 @@ class MassPickupRequest extends AbstractMassAction
     protected $orderManagement;
 
     /**
-     * @var ScopeConfigInterface
+     * @var Config
      */
-    protected $scopeConfig;
+    protected $config;
 
     /**
      * @var BalikobotApiClient
@@ -57,32 +58,40 @@ class MassPickupRequest extends AbstractMassAction
     protected $order;
 
     /**
+     * @var OrderSender
+     */
+    protected $sender;
+
+    /**
      * @param Context $context
      * @param Filter $filter
      * @param CollectionFactory $collectionFactory
      * @param OrderManagementInterface $orderManagement
-     * @param ScopeConfigInterface $scopeConfig
+     * @param Config $config
      * @param BalikobotApiClient $balikobotApiClient
      * @param LoggerInterface $logger
      * @param Order $order
+     * @param OrderSender $sender
      */
     public function __construct(
         Context                  $context,
         Filter                   $filter,
         CollectionFactory        $collectionFactory,
         OrderManagementInterface $orderManagement,
-        ScopeConfigInterface     $scopeConfig,
+        Config                   $config,
         BalikobotApiClient       $balikobotApiClient,
         LoggerInterface          $logger,
-        Order                    $order
+        Order                    $order,
+        OrderSender              $sender
     ) {
         parent::__construct($context, $filter);
         $this->collectionFactory = $collectionFactory;
         $this->orderManagement = $orderManagement;
-        $this->scopeConfig = $scopeConfig;
+        $this->config = $config;
         $this->balikobotApiClient = $balikobotApiClient;
         $this->logger = $logger;
         $this->order = $order;
+        $this->sender = $sender;
     }
 
     /**
@@ -135,12 +144,13 @@ class MassPickupRequest extends AbstractMassAction
 
             $packageIds[] = $balikobotData->package_id;
             $entityIds[] = $item->getEntityId();
+
         }
 
         // mapping vendor shipping name to bbot name
         if ($shippingMethodOnly !== null) {
 
-            $map = json_decode($this->scopeConfig->getValue('balikobot/allowed_shippers/shippers') ?: '[]', true);
+            $map = json_decode($this->config->getAllowedShippers() ?: '[]', true);
             foreach ($map as $shipperCode => $info) {
                 if (strpos($shippingMethodOnly, (string)$shipperCode) !== false) {
                     $shippingMethodOnly = $info['balikobot_shippers'];
@@ -167,6 +177,11 @@ class MassPickupRequest extends AbstractMassAction
                     $loadedOrder->addStatusToHistory($loadedOrder->getStatus(), __('new order status - ' .
                         Status::LABEL_STATUS_BBOT_PICKUP));
                     $loadedOrder->save();
+
+                    if ($this->config->isSendEmailTracking()) {
+                        //send email
+                        $this->sender->send($loadedOrder);
+                    }
                 }
             }
 

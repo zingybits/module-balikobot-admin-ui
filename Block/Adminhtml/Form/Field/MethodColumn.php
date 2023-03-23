@@ -19,28 +19,28 @@ declare(strict_types=1);
 
 namespace ZingyBits\BalikobotAdminUi\Block\Adminhtml\Form\Field;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\View\Element\Html\Select;
 use Magento\Framework\View\Element\Context;
+use ZingyBits\BalikobotCore\Model\Config;
 
 class MethodColumn extends Select
 {
     /**
-     * @var ScopeConfigInterface
+     * @var Config
      */
-    protected $scopeConfig;
+    protected $config;
 
     /**
      * @param Context $context
-     * @param ScopeConfigInterface $scopeConfig
+     * @param Config $config
      * @param array $data
      */
     public function __construct(
         Context $context,
-        ScopeConfigInterface $scopeConfig,
+        Config $config,
         array $data = []
     ) {
-        $this->scopeConfig = $scopeConfig;
+        $this->config = $config;
         parent::__construct($context, $data);
     }
 
@@ -89,7 +89,7 @@ class MethodColumn extends Select
         $list = [
             ['label' => 'No', 'value' => '0'],
         ];
-        $values = json_decode($this->scopeConfig->getValue('balikobot/allowed_shippers/shippers') ?: '[]', true);
+        $values = json_decode($this->config->getAllowedShippers() ?: '[]', true);
         foreach ($values as $data) {
             if (isset($data['method']) && $data['method']) {
                 $list[] = ['label' => $data['method'], 'value' => $data['method']];

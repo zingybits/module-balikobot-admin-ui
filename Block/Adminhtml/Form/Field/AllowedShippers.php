@@ -20,6 +20,8 @@ namespace ZingyBits\BalikobotAdminUi\Block\Adminhtml\Form\Field;
 use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
 use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Backend\Block\Template\Context;
+use Magento\Shipping\Model\Config as ShippingConfig;
 
 class AllowedShippers extends AbstractFieldArray
 {
@@ -32,6 +34,23 @@ class AllowedShippers extends AbstractFieldArray
      * @var BalikobotShippersColumn
      */
     private $balikobotShippersRenderer;
+
+    /**
+     * @var ShippingConfig
+     */
+    private $shippingConfig;
+
+    /**
+     * @param ShippingConfig $shippingConfig
+     */
+    public function __construct(
+        Context $context,
+        ShippingConfig $shippingConfig,
+    )
+    {
+        $this->shippingConfig = $shippingConfig;
+        parent::__construct($context);
+    }
 
     /**
      * Prepare rendering the new field by adding all the needed columns
@@ -61,6 +80,30 @@ class AllowedShippers extends AbstractFieldArray
         } catch (\Throwable $th) {
             $this->_template = 'ZingyBits_BalikobotAdminUi::system/config/form/field/error_plug.phtml';
         }
+    }
+
+    /**
+     * Get the grid and scripts contents
+     *
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @return string
+     */
+    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    {
+        $activeShippingMethods = array_keys($this->shippingConfig->getActiveCarriers());
+        $elements = [];
+        foreach ($element->getValue() as $key => $value) {
+            if (in_array($key, $activeShippingMethods)) {
+                $elements[$key] = $value;
+            }
+        }
+        $element->setValue($elements);
+
+        $this->setElement($element);
+        $html = $this->_toHtml();
+        $this->_arrayRowsCache = null;
+        // doh, the object is used as singleton!
+        return $html;
     }
 
     /**
